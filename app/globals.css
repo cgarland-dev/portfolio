@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/*
+  Design tokens — a dark, professional navy theme.
+  Defined as raw CSS variables so they can be used both in Tailwind
+  utilities (via the @theme mapping below) and in plain CSS.
+*/
+:root {
+  --bg: #060a14; /* near-black navy: page background */
+  --surface: #0c1426; /* cards / panels */
+  --surface-2: #111c33; /* elevated / hover panels */
+  --border: #1e2a44; /* subtle blue-gray borders */
+  --fg: #e8eef7; /* off-white primary text */
+  --muted: #94a3b8; /* muted gray secondary text */
+  --accent: #38bdf8; /* sky/cyan accent */
+  --accent-2: #7dd3fc; /* lighter accent for hover */
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
+    monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Visible, consistent keyboard focus everywhere */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--accent) 30%, transparent);
+    color: var(--fg);
+  }
+}
