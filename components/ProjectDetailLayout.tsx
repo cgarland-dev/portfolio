@@ -146,10 +146,10 @@ export function ProjectLinksSection({ project }: { project: Project }) {
             )}
           </dd>
         </div>
-        <div className="flex flex-wrap gap-x-2">
-          <dt className="font-medium text-fg">Live demo:</dt>
-          <dd>
-            {demoUrl ? (
+        {demoUrl && (
+          <div className="flex flex-wrap gap-x-2">
+            <dt className="font-medium text-fg">Live demo:</dt>
+            <dd>
               <a
                 href={demoUrl}
                 target="_blank"
@@ -158,11 +158,9 @@ export function ProjectLinksSection({ project }: { project: Project }) {
               >
                 {demoUrl.replace(/^https?:\/\//, "")} ↗
               </a>
-            ) : (
-              <span className="text-muted/70">Not currently deployed</span>
-            )}
-          </dd>
-        </div>
+            </dd>
+          </div>
+        )}
       </dl>
     </DetailSection>
   );
