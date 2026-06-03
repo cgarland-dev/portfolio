@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -27,12 +27,33 @@ export const metadata: Metadata = {
     template: "%s | Christopher Garland",
   },
   description,
+  keywords: [
+    "Christopher Garland",
+    "Software Developer",
+    "Python",
+    "Scala",
+    "SQL",
+    "Next.js",
+    "recursive descent parser",
+    "portfolio",
+  ],
+  authors: [{ name: site.name, url: site.github }],
+  creator: site.name,
   openGraph: {
     title: "Christopher Garland | Software Developer",
     description,
     type: "website",
     siteName: site.name,
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Christopher Garland | Software Developer",
+    description,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#060a14",
 };
 
 export default function RootLayout({

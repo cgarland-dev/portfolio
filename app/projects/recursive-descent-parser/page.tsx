@@ -215,7 +215,9 @@ export default function RecursiveDescentParserPage() {
           precedence chain stays DRY — each level is the same function pointed at
           a different operator set and the next-tighter level:
         </p>
-        <CodeBlock label="Scala">{parseBinaryOpSig}</CodeBlock>
+        <CodeBlock label="Scala" copyText={parseBinaryOpSig}>
+          {parseBinaryOpSig}
+        </CodeBlock>
       </DetailSection>
 
       <DetailSection id="learned" title="What I learned" eyebrow="Reflection">

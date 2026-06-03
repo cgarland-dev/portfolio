@@ -1,9 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { run, WELCOME, HELP, EXAMPLES } from "@/lib/minicalc";
+import {
+  evalLine,
+  showEnv,
+  WELCOME,
+  HELP,
+  EXAMPLES,
+  type Value,
+} from "@/lib/minicalc";
+import { highlight } from "@/lib/minicalc/highlight";
 
-type LineKind = "welcome" | "input" | "value" | "error" | "info";
+type LineKind = "welcome" | "input" | "value" | "binding" | "error" | "info";
 type Line = { id: number; kind: LineKind; text: string };
 
 const kindClass: Record<LineKind, string> = {
@@ -11,6 +19,7 @@ const kindClass: Record<LineKind, string> = {
   info: "text-muted",
   input: "text-fg",
   value: "text-[#7ee787]",
+  binding: "text-accent-2",
   error: "text-[#ff7b72]",
 };
 
@@ -27,10 +36,11 @@ export default function MiniCalcRepl() {
   const [history, setHistory] = useState<string[]>([]);
   const [histIdx, setHistIdx] = useState(0);
 
+  const envRef = useRef<Map<string, Value>>(new Map());
   const outputRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const mirrorRef = useRef<HTMLDivElement>(null);
 
-  // Keep the latest output in view.
   useEffect(() => {
     const el = outputRef.current;
     if (el) el.scrollTop = el.scrollHeight;
@@ -48,6 +58,7 @@ export default function MiniCalcRepl() {
 
     if (trimmed === ":clear") {
       setLines(welcomeLines());
+      envRef.current = new Map();
       return;
     }
 
@@ -57,6 +68,10 @@ export default function MiniCalcRepl() {
       append(HELP.map((text) => ({ kind: "info" as const, text })));
       return;
     }
+    if (trimmed === ":env") {
+      append([{ kind: "info", text: showEnv(envRef.current) }]);
+      return;
+    }
     if (trimmed.startsWith(":")) {
       append([
         { kind: "error", text: `Unknown command: ${trimmed}. Try :help.` },
@@ -64,19 +79,20 @@ export default function MiniCalcRepl() {
       return;
     }
 
-    const result = run(source);
-    append([{ kind: result.kind === "value" ? "value" : "error", text: result.text }]);
+    const result = evalLine(source, envRef.current);
+    append([{ kind: result.kind, text: result.text }]);
   };
+
+  const remember = (source: string) =>
+    setHistory((prev) => {
+      const next = [...prev, source];
+      setHistIdx(next.length);
+      return next;
+    });
 
   const submit = (source: string) => {
     evaluateLine(source);
-    if (source.trim().length > 0) {
-      setHistory((prev) => {
-        const next = [...prev, source];
-        setHistIdx(next.length);
-        return next;
-      });
-    }
+    if (source.trim().length > 0) remember(source);
     setInput("");
   };
 
@@ -103,18 +119,19 @@ export default function MiniCalcRepl() {
 
   const runExample = (ex: string) => {
     evaluateLine(ex);
-    setHistory((prev) => {
-      const next = [...prev, ex];
-      setHistIdx(next.length);
-      return next;
-    });
+    remember(ex);
     inputRef.current?.focus();
+  };
+
+  const syncScroll = () => {
+    if (mirrorRef.current && inputRef.current) {
+      mirrorRef.current.scrollLeft = inputRef.current.scrollLeft;
+    }
   };
 
   return (
     <div className="not-prose">
       <div className="overflow-hidden rounded-lg border border-border bg-[#04070e]">
-        {/* Title bar */}
         <div className="flex items-center justify-between border-b border-border px-4 py-2">
           <div className="flex items-center gap-2">
             <span className="flex gap-1.5" aria-hidden="true">
@@ -126,14 +143,16 @@ export default function MiniCalcRepl() {
           </div>
           <button
             type="button"
-            onClick={() => setLines(welcomeLines())}
+            onClick={() => {
+              setLines(welcomeLines());
+              envRef.current = new Map();
+            }}
             className="rounded px-2 py-1 text-xs text-muted transition-colors hover:text-fg"
           >
             Clear
           </button>
         </div>
 
-        {/* Output */}
         <div
           ref={outputRef}
           role="log"
@@ -158,7 +177,6 @@ export default function MiniCalcRepl() {
             </div>
           ))}
 
-          {/* Prompt */}
           <form onSubmit={onSubmit} className="mt-1 flex items-center">
             <label htmlFor="minicalc-input" className="sr-only">
               MiniCalc expression input
@@ -166,31 +184,45 @@ export default function MiniCalcRepl() {
             <span aria-hidden="true" className="text-accent">
               {"> "}
             </span>
-            <input
-              id="minicalc-input"
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={onKeyDown}
-              spellCheck={false}
-              autoComplete="off"
-              autoCapitalize="off"
-              autoCorrect="off"
-              className="ml-1 flex-1 border-none bg-transparent text-fg caret-accent outline-none"
-            />
+            {/* Highlighted mirror sits behind a transparent input. */}
+            <div className="relative ml-1 h-5 flex-1">
+              <div
+                ref={mirrorRef}
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 overflow-hidden whitespace-pre p-0 font-mono text-sm leading-5 text-fg"
+              >
+                {highlight(input).map((span, i) => (
+                  <span key={i} style={{ color: span.color }}>
+                    {span.text}
+                  </span>
+                ))}
+              </div>
+              <input
+                id="minicalc-input"
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={onKeyDown}
+                onScroll={syncScroll}
+                spellCheck={false}
+                autoComplete="off"
+                autoCapitalize="off"
+                autoCorrect="off"
+                className="absolute inset-0 w-full border-none bg-transparent p-0 font-mono text-sm leading-5 text-transparent caret-accent outline-none"
+              />
+            </div>
           </form>
         </div>
       </div>
 
-      {/* Helper row */}
       <p className="mt-3 text-xs text-muted">
         Press <kbd className="font-mono text-fg">Enter</kbd> to run ·{" "}
         <kbd className="font-mono text-fg">↑</kbd>/
         <kbd className="font-mono text-fg">↓</kbd> for history · try{" "}
-        <code className="font-mono text-accent-2">:help</code>
+        <code className="font-mono text-accent-2">:help</code> or{" "}
+        <code className="font-mono text-accent-2">:env</code>
       </p>
 
-      {/* Example chips */}
       <div className="mt-3 flex flex-wrap gap-2">
         {EXAMPLES.map((ex) => (
           <button

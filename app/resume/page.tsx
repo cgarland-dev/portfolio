@@ -56,7 +56,12 @@ export default function ResumePage() {
         <SectionHeading as="h1" eyebrow="Resume">
           {site.name}
         </SectionHeading>
-        <ButtonLink href={site.resumePdf} variant="primary" download>
+        <ButtonLink
+          href={site.resumePdf}
+          variant="primary"
+          download
+          className="print:hidden"
+        >
           Download PDF
         </ButtonLink>
       </div>
