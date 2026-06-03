@@ -5,6 +5,7 @@ import ProjectDetailLayout, {
   ProjectLinksSection,
 } from "@/components/ProjectDetailLayout";
 import CodeBlock from "@/components/CodeBlock";
+import MiniCalcRepl from "@/components/MiniCalcRepl";
 import { getProject } from "@/data/projects";
 
 const project = getProject("recursive-descent-parser");
@@ -24,32 +25,6 @@ function Code({ children }: { children: React.ReactNode }) {
 }
 
 const listClass = "list-disc space-y-2 pl-5 marker:text-accent";
-
-type ReplLine = { kind: "info" | "in" | "out" | "err"; text: string };
-
-const replSession: ReplLine[] = [
-  { kind: "info", text: "Welcome to MiniCalc!" },
-  { kind: "info", text: "Type :help for help, :quit to exit" },
-  { kind: "in", text: "5 + 3 * 2" },
-  { kind: "out", text: "11.0" },
-  { kind: "in", text: "let x = 10 in x + 5" },
-  { kind: "out", text: "15.0" },
-  { kind: "in", text: "if 10 > 5 then 100 else 200" },
-  { kind: "out", text: "100.0" },
-  { kind: "in", text: "(5 + 3) * 2 > 10 && true" },
-  { kind: "out", text: "true" },
-  { kind: "in", text: "x + 5" },
-  { kind: "err", text: "Error: Undefined variable: x." },
-  { kind: "in", text: "10 / 0" },
-  { kind: "err", text: "Error: Cannot divide by zero: division by zero." },
-];
-
-const replColor: Record<ReplLine["kind"], string> = {
-  info: "text-muted",
-  in: "text-fg",
-  out: "text-[#7ee787]",
-  err: "text-[#ff7b72]",
-};
 
 const parseBinaryOpSig = `// One generic function handles every precedence level,
 // with the correct associativity, by delegating to the
@@ -153,26 +128,43 @@ export default function RecursiveDescentParserPage() {
         </ul>
       </DetailSection>
 
-      <DetailSection
-        id="repl"
-        title="Example REPL session"
-        eyebrow="In action"
-      >
-        <CodeBlock label="$ sbt run">
-          {replSession.map((line, i) => (
-            <span key={i}>
-              {line.kind === "in" && (
-                <span className="text-accent">{"> "}</span>
-              )}
-              <span className={replColor[line.kind]}>{line.text}</span>
-              {"\n"}
-            </span>
-          ))}
-        </CodeBlock>
+      <DetailSection id="try" title="Try it in your browser" eyebrow="Live">
+        <p>
+          The interpreter below is a faithful TypeScript port of the Scala
+          MiniCalc interpreter — the same two-phase tokenizer, recursive descent
+          parser, evaluator, precedence rules, and error messages, running
+          entirely in your browser. Type an expression and press Enter.
+        </p>
+
+        <MiniCalcRepl />
+
+        <p className="text-sm">Quick reference:</p>
+        <ul className={listClass}>
+          <li>
+            <span className="text-fg">Numbers &amp; booleans:</span>{" "}
+            <Code>42</Code>, <Code>3.14</Code>, <Code>true</Code>,{" "}
+            <Code>false</Code>
+          </li>
+          <li>
+            <span className="text-fg">Arithmetic · comparison · logic:</span>{" "}
+            <Code>+ - * /</Code>, <Code>{"< > <= >= == !="}</Code>,{" "}
+            <Code>&amp;&amp; ||</Code>
+          </li>
+          <li>
+            <span className="text-fg">Variables:</span>{" "}
+            <Code>let x = 10 in x * 2</Code>
+          </li>
+          <li>
+            <span className="text-fg">Conditionals:</span>{" "}
+            <Code>if x &gt; 5 then 100 else 200</Code>
+          </li>
+        </ul>
         <p className="text-sm">
           Values evaluate to <Code>Double</Code> or <Code>Boolean</Code>, and
-          errors are returned as values rather than thrown — so the REPL can
-          print them cleanly and keep going.
+          errors — type mismatches, undefined variables, division by zero, and
+          parse errors with a caret — are returned as values rather than thrown,
+          so the REPL prints them and keeps going. Task and workflow features of
+          the full language run in the Scala app, not in this demo.
         </p>
       </DetailSection>
 
@@ -223,7 +215,9 @@ export default function RecursiveDescentParserPage() {
           precedence chain stays DRY — each level is the same function pointed at
           a different operator set and the next-tighter level:
         </p>
-        <CodeBlock label="Scala">{parseBinaryOpSig}</CodeBlock>
+        <CodeBlock label="Scala" copyText={parseBinaryOpSig}>
+          {parseBinaryOpSig}
+        </CodeBlock>
       </DetailSection>
 
       <DetailSection id="learned" title="What I learned" eyebrow="Reflection">
