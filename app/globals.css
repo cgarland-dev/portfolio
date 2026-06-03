@@ -59,3 +59,27 @@
     color: var(--fg);
   }
 }
+
+/* Print: switch to a clean light theme and drop site chrome (resume page). */
+@media print {
+  :root {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f3f4f6;
+    --border: #d1d5db;
+    --fg: #111827;
+    --muted: #374151;
+    --accent: #1d4ed8;
+    --accent-2: #1d4ed8;
+  }
+
+  body {
+    background: #ffffff;
+    color: #111827;
+  }
+
+  header,
+  footer {
+    display: none !important;
+  }
+}

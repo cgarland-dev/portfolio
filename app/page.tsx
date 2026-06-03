@@ -14,6 +14,13 @@ export default function HomePage() {
           className="pointer-events-none absolute -top-40 left-1/2 h-80 w-[44rem] max-w-full -translate-x-1/2 rounded-full bg-accent/10 blur-3xl"
         />
         <div className="relative mx-auto max-w-5xl px-4 py-20 sm:px-6 sm:py-28">
+          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent-2">
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-accent"
+              aria-hidden="true"
+            />
+            Open to software development roles
+          </span>
           <h1 className="text-4xl font-bold tracking-tight text-fg sm:text-6xl">
             {site.name}
           </h1>
