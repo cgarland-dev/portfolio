@@ -6,12 +6,14 @@ import {
   showEnv,
   WELCOME,
   HELP,
+  HELP_FULL,
   EXAMPLES,
-  type Value,
+  SCALA_ONLY_COMMANDS,
+  type Environment,
 } from "@/lib/minicalc";
 import { highlight } from "@/lib/minicalc/highlight";
 
-type LineKind = "welcome" | "input" | "value" | "binding" | "error" | "info";
+type LineKind = "welcome" | "input" | "value" | "error" | "info";
 type Line = { id: number; kind: LineKind; text: string };
 
 const kindClass: Record<LineKind, string> = {
@@ -19,7 +21,6 @@ const kindClass: Record<LineKind, string> = {
   info: "text-muted",
   input: "text-fg",
   value: "text-[#7ee787]",
-  binding: "text-accent-2",
   error: "text-[#ff7b72]",
 };
 
@@ -36,7 +37,7 @@ export default function MiniCalcRepl() {
   const [history, setHistory] = useState<string[]>([]);
   const [histIdx, setHistIdx] = useState(0);
 
-  const envRef = useRef<Map<string, Value>>(new Map());
+  const envRef = useRef<Environment>(new Map());
   const outputRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const mirrorRef = useRef<HTMLDivElement>(null);
@@ -56,30 +57,45 @@ export default function MiniCalcRepl() {
     const trimmed = source.trim();
     if (trimmed.length === 0) return;
 
-    if (trimmed === ":clear") {
-      setLines(welcomeLines());
-      envRef.current = new Map();
-      return;
-    }
-
     append([{ kind: "input", text: source }]);
 
     if (trimmed === ":help") {
-      append(HELP.map((text) => ({ kind: "info" as const, text })));
+      append([{ kind: "info", text: HELP }]);
+      return;
+    }
+    if (trimmed === ":help full") {
+      append([{ kind: "info", text: HELP_FULL }]);
       return;
     }
     if (trimmed === ":env") {
       append([{ kind: "info", text: showEnv(envRef.current) }]);
       return;
     }
-    if (trimmed.startsWith(":")) {
+    if (trimmed === ":clear") {
+      envRef.current = new Map();
+      append([{ kind: "info", text: "Environment cleared" }]);
+      return;
+    }
+    if (trimmed === ":quit" || trimmed === ":q") {
+      append([{ kind: "info", text: "Goodbye!" }]);
+      return;
+    }
+    if (SCALA_ONLY_COMMANDS.has(trimmed.split(/\s+/)[0])) {
       append([
-        { kind: "error", text: `Unknown command: ${trimmed}. Try :help.` },
+        {
+          kind: "info",
+          text: `${trimmed.split(/\s+/)[0]} is part of MiniCalc's task/workflow engine — run the full Scala app to use it. This browser demo evaluates the expression language.`,
+        },
       ]);
+      return;
+    }
+    if (trimmed.startsWith(":")) {
+      append([{ kind: "error", text: `Unknown command: ${trimmed}. Type :help.` }]);
       return;
     }
 
     const result = evalLine(source, envRef.current);
+    envRef.current = result.env;
     append([{ kind: result.kind, text: result.text }]);
   };
 
@@ -153,19 +169,17 @@ export default function MiniCalcRepl() {
           </button>
         </div>
 
+        {/* Resizable terminal: drag the bottom-right corner to grow it. */}
         <div
           ref={outputRef}
           role="log"
           aria-live="polite"
           aria-label="MiniCalc REPL output"
           onClick={() => inputRef.current?.focus()}
-          className="h-72 cursor-text overflow-y-auto px-4 py-3 font-mono text-sm leading-relaxed"
+          className="h-72 min-h-44 cursor-text resize-y overflow-auto px-4 py-3 font-mono text-sm leading-relaxed"
         >
           {lines.map((line) => (
-            <div
-              key={line.id}
-              className={`whitespace-pre-wrap break-words ${kindClass[line.kind]}`}
-            >
+            <div key={line.id} className={`whitespace-pre ${kindClass[line.kind]}`}>
               {line.kind === "input" ? (
                 <>
                   <span className="text-accent">{"> "}</span>
@@ -184,7 +198,6 @@ export default function MiniCalcRepl() {
             <span aria-hidden="true" className="text-accent">
               {"> "}
             </span>
-            {/* Highlighted mirror sits behind a transparent input. */}
             <div className="relative ml-1 h-5 flex-1">
               <div
                 ref={mirrorRef}
@@ -219,8 +232,8 @@ export default function MiniCalcRepl() {
         Press <kbd className="font-mono text-fg">Enter</kbd> to run ·{" "}
         <kbd className="font-mono text-fg">↑</kbd>/
         <kbd className="font-mono text-fg">↓</kbd> for history · try{" "}
-        <code className="font-mono text-accent-2">:help</code> or{" "}
-        <code className="font-mono text-accent-2">:env</code>
+        <code className="font-mono text-accent-2">:help</code> · drag the
+        bottom-right corner to resize
       </p>
 
       <div className="mt-3 flex flex-wrap gap-2">

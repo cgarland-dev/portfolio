@@ -101,6 +101,54 @@ export function evaluate(expr: Expr, env: Environment): EvalResult {
   }
 }
 
+export type ThreadResult =
+  | { ok: true; value: Value; env: Environment }
+  | { ok: false; error: EvalError };
+
+/**
+ * Environment-threading evaluation, mirroring the Scala REPL's `evalIO` for the
+ * expression subset: `let` and `if` thread (and extend) the environment so
+ * top-level bindings persist across REPL lines, while literals, variables, and
+ * binary operations return the environment unchanged.
+ */
+export function evalThreaded(expr: Expr, env: Environment): ThreadResult {
+  switch (expr.tag) {
+    case "NumLit":
+    case "BoolLit":
+    case "Var":
+    case "BinOp": {
+      const r = evaluate(expr, env);
+      return r.ok ? { ok: true, value: r.value, env } : r;
+    }
+
+    case "Let": {
+      const valueR = evalThreaded(expr.value, env);
+      if (!valueR.ok) return valueR;
+      const extended = new Map(valueR.env);
+      extended.set(expr.name, valueR.value);
+      return evalThreaded(expr.body, extended);
+    }
+
+    case "If": {
+      const condR = evalThreaded(expr.cond, env);
+      if (!condR.ok) return condR;
+      const cond = condR.value;
+      if (cond.tag !== "Bool") {
+        return {
+          ok: false,
+          error: {
+            tag: "TypeMismatch",
+            expected: "Boolean",
+            got: typeName(cond),
+            expr: showValue(cond),
+          },
+        };
+      }
+      return evalThreaded(cond.b ? expr.thenE : expr.elseE, condR.env);
+    }
+  }
+}
+
 function evalBinOp(
   op: BinaryOp,
   left: Expr,
