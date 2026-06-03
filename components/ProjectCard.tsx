@@ -12,7 +12,8 @@ export default function ProjectCard({
   project,
   maxHighlights = 4,
 }: ProjectCardProps) {
-  const { slug, title, type, summary, stack, highlights, repoUrl } = project;
+  const { slug, title, type, summary, stack, highlights, repoUrl, demoUrl } =
+    project;
 
   return (
     <article className="flex h-full flex-col rounded-xl border border-border bg-surface p-6 transition-colors hover:border-accent/40">
@@ -54,6 +55,15 @@ export default function ProjectCard({
         <ButtonLink href={`/projects/${slug}`} variant="primary">
           View Project
         </ButtonLink>
+        {demoUrl && (
+          <ButtonLink
+            href={demoUrl}
+            variant="secondary"
+            aria-label={`Open the live demo for ${title}`}
+          >
+            Live Demo
+          </ButtonLink>
+        )}
         <ButtonLink
           href={repoUrl}
           variant="secondary"

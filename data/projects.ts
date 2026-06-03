@@ -1,5 +1,3 @@
-import { PLACEHOLDER } from "@/data/site";
-
 export type Project = {
   slug: string;
   title: string;
@@ -35,6 +33,7 @@ export const projects: Project[] = [
       "Plotly Sankey diagrams visualize material flow; Pytest, Ruff, and GitHub Actions CI keep the math and data layer honest.",
     ],
     repoUrl: "https://github.com/cgarland-dev/satisfactory-tools",
+    demoUrl: "https://satisfactory-tools.streamlit.app/",
   },
   {
     slug: "recursive-descent-parser",
@@ -57,8 +56,7 @@ export const projects: Project[] = [
       "Pure-functional evaluator that threads an immutable environment for let-bindings, conditionals, and variable shadowing.",
       "Type-safe Either-based error handling (no exceptions for control flow) with clear undefined-variable, divide-by-zero, and type-mismatch messages.",
     ],
-    // PLACEHOLDER — replace with the real repository URL when available.
-    repoUrl: PLACEHOLDER,
+    repoUrl: "https://github.com/cgarland-dev/MiniCalc",
   },
 ];
 
