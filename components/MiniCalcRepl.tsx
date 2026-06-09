@@ -176,7 +176,7 @@ export default function MiniCalcRepl() {
           aria-live="polite"
           aria-label="MiniCalc REPL output"
           onClick={() => inputRef.current?.focus()}
-          className="h-72 min-h-44 cursor-text resize-y overflow-auto px-4 py-3 font-mono text-sm leading-relaxed"
+          className="h-72 min-h-44 cursor-text resize-y overflow-auto px-4 py-3 font-mono text-sm leading-tight"
         >
           {lines.map((line) => (
             <div key={line.id} className={`whitespace-pre ${kindClass[line.kind]}`}>

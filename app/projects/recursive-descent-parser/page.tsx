@@ -11,9 +11,9 @@ import { getProject } from "@/data/projects";
 const project = getProject("recursive-descent-parser");
 
 export const metadata: Metadata = {
-  title: "MiniCalc — Recursive Descent Parser & REPL",
+  title: "MiniCalc — Interpreter & Task-Orchestration Runtime",
   description:
-    "A purely functional interpreter for a custom expression language in Scala 3: a two-phase recursive descent parser, an AST built from algebraic data types, a pure evaluator with immutable environments, Either-based error handling, and an interactive REPL.",
+    "A Scala 3 expression interpreter that grew into a Cats Effect task-orchestration runtime: a hand-written recursive descent parser and pure evaluator, plus typed tasks with priorities, dependencies, timeouts, and retries, a topological scheduler with cycle detection, and concurrent fiber-based execution — with an interactive REPL.",
 };
 
 function Code({ children }: { children: React.ReactNode }) {
@@ -25,6 +25,19 @@ function Code({ children }: { children: React.ReactNode }) {
 }
 
 const listClass = "list-disc space-y-2 pl-5 marker:text-accent";
+
+const taskSig = `// A task is a Cats Effect IO action plus its
+// scheduling and execution configuration.
+case class Task[A](
+  id: TaskId,
+  name: String,
+  priority: Priority,              // High | Normal | Low
+  dependencies: Set[TaskId],
+  action: IO[A],                   // the work to run
+  timeout: Option[FiniteDuration],
+  retryPolicy: RetryPolicy,        // NoRetry | LinearRetry | ExponentialRetry
+  metadata: Map[String, String]
+)`;
 
 const parseBinaryOpSig = `// One generic function handles every precedence level,
 // with the correct associativity, by delegating to the
@@ -43,18 +56,19 @@ export default function RecursiveDescentParserPage() {
     <ProjectDetailLayout project={project}>
       <DetailSection id="overview" title="Project overview" eyebrow="Overview">
         <p>
-          MiniCalc is a purely functional interpreter for a small expression
-          language, written in Scala 3. It began as a functional-programming
-          course project and grew into a clean end-to-end pipeline: source text
-          is tokenized, parsed into an abstract syntax tree by a recursive
-          descent parser, and evaluated by a pure function that threads an
-          immutable environment. An interactive REPL ties the pieces together.
+          MiniCalc is a Scala 3 project in two layers. It started as a purely
+          functional interpreter for a small expression language — source text
+          is tokenized, parsed into an abstract syntax tree by a hand-written
+          recursive descent parser, and evaluated by a pure, type-checked
+          function that threads an immutable environment.
         </p>
         <p>
-          The language is small but real — numbers and booleans, variables,
-          arithmetic, comparisons, logical operators, <Code>let</Code> bindings,
-          and <Code>if/then/else</Code> conditionals — which is enough surface
-          area to exercise precedence, scope, and type checking properly.
+          It then grew into a <span className="text-fg">task-orchestration
+          runtime</span>: you can define tasks with priorities, dependencies,
+          timeouts, and retries, compose them into workflows, and run them
+          concurrently on <Code>Cats Effect</Code> fibers — with a
+          dependency-aware scheduler, cycle detection, and execution statistics,
+          all driven from an interactive REPL.
         </p>
       </DetailSection>
 
@@ -102,38 +116,57 @@ export default function RecursiveDescentParserPage() {
       </DetailSection>
 
       <DetailSection id="features" title="Features" eyebrow="Features">
+        <p className="font-medium text-fg">Expression language</p>
         <ul className={listClass}>
           <li>
-            <span className="text-fg">Expression language</span> with numeric and
-            boolean literals, variables, arithmetic, comparison, and logical
-            operators.
+            Numbers, booleans, and variables with arithmetic, comparison, and
+            logical operators at the correct precedence.
           </li>
           <li>
-            <span className="text-fg">
-              <Code>let</Code> bindings and conditionals
-            </span>{" "}
-            — e.g. <Code>let x = 10 in x * 2</Code> and{" "}
-            <Code>if x &gt; 5 then 100 else 200</Code> — with proper lexical
-            scope and variable shadowing.
+            <Code>let</Code> bindings and <Code>if/then/else</Code> conditionals,
+            with lexical scope and variable shadowing.
           </li>
           <li>
-            <span className="text-fg">Interactive REPL</span> with commands:{" "}
-            <Code>:help</Code>, <Code>:env</Code> (list bindings),{" "}
-            <Code>:clear</Code>, and <Code>:quit</Code>.
+            Type-checked evaluation with clear, position-aware errors — undefined
+            variables, divide-by-zero, type mismatches, and parse errors with a
+            caret.
+          </li>
+        </ul>
+
+        <p className="font-medium text-fg">Task orchestration &amp; concurrency</p>
+        <ul className={listClass}>
+          <li>
+            Define tasks with optional <span className="text-fg">priority</span>{" "}
+            (High/Normal/Low), <span className="text-fg">dependencies</span>,{" "}
+            <span className="text-fg">timeouts</span>, and{" "}
+            <span className="text-fg">retry policies</span> (linear or
+            exponential backoff).
           </li>
           <li>
-            <span className="text-fg">Helpful, typed errors</span> for undefined
-            variables, division by zero, and type mismatches.
+            Compose tasks with <Code>sequence</Code> / <Code>parallel</Code>,
+            schedule them <Code>with FIFO</Code> or <Code>PRIORITY</Code>, and
+            name compositions as <span className="text-fg">workflows</span>.
+          </li>
+          <li>
+            Dependency-aware <span className="text-fg">topological scheduling</span>{" "}
+            with circular-dependency detection, then concurrent execution on Cats
+            Effect fibers with a configurable maximum concurrency.
+          </li>
+          <li>
+            <span className="text-fg">Execution statistics</span> — started /
+            completed / failed counts, durations, and currently-running tasks.
           </li>
         </ul>
       </DetailSection>
 
       <DetailSection id="try" title="Try it in your browser" eyebrow="Live">
         <p>
-          The interpreter below is a faithful TypeScript port of the Scala
-          MiniCalc interpreter — the same two-phase tokenizer, recursive descent
-          parser, evaluator, precedence rules, and error messages, running
-          entirely in your browser. Type an expression and press Enter.
+          The console below is a faithful TypeScript port of MiniCalc&apos;s{" "}
+          <span className="text-fg">expression layer</span> — the same two-phase
+          tokenizer, recursive descent parser, evaluator, precedence rules, and
+          error messages, running entirely in your browser. Type an expression
+          and press Enter; <Code>:help</Code> shows the original command
+          reference.
         </p>
 
         <MiniCalcRepl />
@@ -160,11 +193,9 @@ export default function RecursiveDescentParserPage() {
           </li>
         </ul>
         <p className="text-sm">
-          Values evaluate to <Code>Double</Code> or <Code>Boolean</Code>, and
-          errors — type mismatches, undefined variables, division by zero, and
-          parse errors with a caret — are returned as values rather than thrown,
-          so the REPL prints them and keeps going. Task and workflow features of
-          the full language run in the Scala app, not in this demo.
+          The task, scheduling, and workflow features run on Cats Effect in the
+          full Scala app, so they aren&apos;t part of this static browser demo —
+          they need a real runtime.
         </p>
       </DetailSection>
 
@@ -174,46 +205,58 @@ export default function RecursiveDescentParserPage() {
         eyebrow="Engineering"
       >
         <p>
-          Parsing happens in two phases — tokenization (<Code>String</Code> →{" "}
-          <Code>List[Token]</Code>) followed by recursive descent parsing (
-          <Code>List[Token]</Code> → <Code>Expr</Code>). The language itself is
-          modeled as algebraic data types: a sealed <Code>Expr</Code> trait with
-          case classes for each construct, which lets the evaluator pattern-match
-          exhaustively with the compiler checking for completeness.
+          Both layers share one pipeline. Source is tokenized (<Code>String</Code>{" "}
+          → <Code>List[Token]</Code>) and parsed by recursive descent into a
+          sealed <Code>Expr</Code> AST. A pure <Code>eval</Code> handles
+          expressions; an effectful <Code>evalIO</Code> (Cats Effect{" "}
+          <Code>IO</Code>) handles task and workflow expressions, threading an
+          immutable <Code>Environment</Code> of bindings, tasks, and workflows.
         </p>
         <ul className={listClass}>
           <li>
-            <span className="text-fg">Pure evaluator:</span> recursively
-            pattern-matches on the AST, threading an immutable{" "}
-            <Code>Environment</Code> for variable lookups, with type checks that
-            produce clear messages.
+            <span className="text-fg">Parser &amp; evaluator:</span> a single
+            generic <Code>parseBinaryOp</Code> per precedence level and a single{" "}
+            <Code>evalBinaryOp[T, R]</Code> for all operators; errors are values
+            (<Code>Either</Code>), never thrown for control flow.
           </li>
           <li>
-            <span className="text-fg">Functional error handling:</span>{" "}
-            <Code>Either[Error, Value]</Code> throughout, composed with
-            for-comprehensions — no exceptions for control flow.
+            <span className="text-fg">Tasks:</span> a <Code>Task[A]</Code> wraps
+            an <Code>IO</Code> action plus priority, dependencies, timeout, and
+            retry policy, assembled with a fluent <Code>TaskBuilder</Code>.
           </li>
           <li>
-            <span className="text-fg">Generic abstractions:</span> a single{" "}
-            <Code>evalBinaryOp[T, R]</Code> handles arithmetic, comparison, and
-            logical operators, and a single <Code>parseBinaryOp</Code> handles
-            every precedence level.
+            <span className="text-fg">Scheduler:</span> a{" "}
+            <Code>TopologicalScheduler</Code> orders tasks with Kahn&apos;s
+            algorithm and detects cycles via three-color DFS; FIFO and Priority
+            strategies decide ties.
           </li>
           <li>
-            <span className="text-fg">Immutable environment:</span> a map from
-            names to values where every operation returns a new environment,
-            which makes shadowing fall out naturally.
+            <span className="text-fg">Execution:</span> a{" "}
+            <Code>FiberExecutionEngine</Code> runs the plan with{" "}
+            <Code>parTraverseN</Code>, applying per-task timeouts and retries and
+            returning an <Code>ExecutionReport</Code>.
           </li>
           <li>
-            <span className="text-fg">Tested with ScalaTest:</span> a
-            comprehensive suite across the evaluator, parser, environment, REPL,
-            and integration behavior.
+            <span className="text-fg">Tested with ScalaTest:</span> 13 spec
+            suites — including property-based parser tests — across the parser,
+            evaluator, environment, tasks, scheduler, execution engine, monitor,
+            and REPL.
           </li>
         </ul>
         <p>
-          The generic <Code>parseBinaryOp</Code> is a good example of how the
-          precedence chain stays DRY — each level is the same function pointed at
-          a different operator set and the next-tighter level:
+          The code is split into focused packages: <Code>ast</Code>,{" "}
+          <Code>parser</Code>, <Code>eval</Code>, <Code>task</Code>,{" "}
+          <Code>scheduler</Code>, <Code>execution</Code>, <Code>monitoring</Code>,
+          and <Code>repl</Code>. A task is just an <Code>IO</Code> action plus its
+          configuration:
+        </p>
+        <CodeBlock label="Scala" copyText={taskSig}>
+          {taskSig}
+        </CodeBlock>
+        <p>
+          …and the precedence chain stays DRY — each level is the same generic
+          combinator pointed at a different operator set and the next-tighter
+          level:
         </p>
         <CodeBlock label="Scala" copyText={parseBinaryOpSig}>
           {parseBinaryOpSig}
@@ -222,16 +265,19 @@ export default function RecursiveDescentParserPage() {
 
       <DetailSection id="learned" title="What I learned" eyebrow="Reflection">
         <p>
-          This project helped connect formal language concepts to working
-          software. Implementing the parser by hand made grammar structure,
-          operator precedence, evaluation order, and error handling much more
-          concrete than using a parser generator or library.
+          Building the parser and evaluator by hand made grammar structure,
+          operator precedence, evaluation order, and error handling concrete —
+          and modeling the language as algebraic data types threaded through{" "}
+          <Code>Either</Code> made invalid states hard to represent and errors
+          impossible to silently ignore.
         </p>
         <p>
-          Modeling the language as algebraic data types and threading results
-          through <Code>Either</Code> also changed how I think about
-          correctness: invalid states become hard to represent, and errors
-          become impossible to silently ignore.
+          Extending it into a task runtime was a different lesson: expressing
+          work as Cats Effect <Code>IO</Code>, keeping effects at the edges while
+          the evaluation core stays pure, and getting concurrency right —
+          topological scheduling, cycle detection, and fiber-based parallelism
+          with timeouts and retries — without leaking mutability back into the
+          interpreter.
         </p>
       </DetailSection>
 
