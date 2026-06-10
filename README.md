@@ -58,9 +58,6 @@ centralized for easy editing:
 
 - **LinkedIn URL** — set `linkedin` in `data/site.ts` (currently a placeholder;
   it renders as "coming soon" until set).
-- **Resume PDF** — replace `public/resume.pdf` with the real file.
-- **Recursive Descent Parser repo URL** — set `repoUrl` for that project in
-  `data/projects.ts` (currently a placeholder).
 - **Education details** — add institution and graduation year in
   `app/resume/page.tsx`.
 - **Project screenshots** — drop images into the screenshot placeholders on the
