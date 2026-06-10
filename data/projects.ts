@@ -57,7 +57,7 @@ export const projects: Project[] = [
       "Task orchestration: typed tasks with priorities, dependencies, timeouts, and linear/exponential retries, composed into sequences, parallels, and workflows.",
       "Dependency-aware topological scheduler (Kahn's algorithm + cycle detection) feeding a Cats Effect fiber execution engine, with execution statistics.",
     ],
-    repoUrl: "https://github.com/cgarland-dev/MiniCalc",
+    repoUrl: "https://github.com/cgarland-dev/TaskView",
   },
 ];
 
