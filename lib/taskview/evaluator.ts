@@ -1,5 +1,5 @@
 /**
- * MiniCalc evaluator — a pure, recursive, environment-threading evaluator
+ * TaskView evaluator — a pure, recursive, environment-threading evaluator
  * ported from Scala `minicalc.eval.Evaluator.eval`.
  *
  * Semantics preserved from the original:
@@ -20,7 +20,7 @@ import {
   showNum,
   showValue,
   typeName,
-} from "@/lib/minicalc/ast";
+} from "@/lib/taskview/ast";
 
 export type Environment = ReadonlyMap<string, Value>;
 

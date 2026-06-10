@@ -1,5 +1,5 @@
 /**
- * Verbatim REPL banner and help text from the original Scala MiniCalc
+ * Verbatim REPL banner and help text from the original Scala TaskView
  * (src/main/scala/minicalc/repl/REPL.scala — HelpText). Kept identical so the
  * browser REPL's `:help` matches the real interpreter exactly.
  *
@@ -10,13 +10,13 @@
 const BORDER = "=".repeat(80);
 
 export const WELCOME: string[] = [
-  "Welcome to MiniCalc!",
+  "Welcome to TaskView!",
   "Type :help for help, :quit to exit",
 ];
 
 export const HELP: string = [
   BORDER,
-  "|                   MiniCalc REPL - Commands and Syntax                        |",
+  "|                   TaskView REPL - Commands and Syntax                        |",
   BORDER,
   "|                                                                              |",
   "| COMMANDS                                                                     |",
@@ -26,7 +26,7 @@ export const HELP: string = [
   "| :help full         Show detailed help with examples                          |",
   "| :env               List current variable bindings                            |",
   "| :clear             Clear all definitions (variables, tasks, workflows)       |",
-  "| :quit, :q          Exit MiniCalc                                             |",
+  "| :quit, :q          Exit TaskView                                             |",
   "|                                                                              |",
   "| :tasks             Show all defined tasks with their configuration           |",
   "| :clear-tasks       Clear all task definitions                                |",
@@ -53,7 +53,7 @@ export const HELP: string = [
 
 export const HELP_FULL: string = [
   BORDER,
-  "|                   MiniCalc REPL - Commands and Syntax                        |",
+  "|                   TaskView REPL - Commands and Syntax                        |",
   BORDER,
   "|                                                                              |",
   "| COMMANDS                                                                     |",
@@ -62,7 +62,7 @@ export const HELP_FULL: string = [
   "| :demo              Run interactive demonstration of all features             |",
   "| :env               List current variable bindings                            |",
   "| :clear             Clear all definitions (variables, tasks, workflows)       |",
-  "| :quit, :q          Exit MiniCalc                                             |",
+  "| :quit, :q          Exit TaskView                                             |",
   "|                                                                              |",
   "| :tasks             Show all defined tasks with their configuration           |",
   "| :clear-tasks       Clear all task definitions                                |",

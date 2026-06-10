@@ -16,7 +16,7 @@ const skillGroups: { label: string; skills: string[] }[] = [
   { label: "Languages", skills: ["Python", "Scala", "SQL"] },
   {
     label: "Frameworks & libraries",
-    skills: ["Streamlit", "SQLAlchemy", "Plotly", "Pytest", "ScalaTest"],
+    skills: ["Streamlit", "SQLAlchemy", "Plotly", "Cats Effect", "Pytest", "ScalaTest"],
   },
   {
     label: "Tooling & practices",
@@ -26,6 +26,7 @@ const skillGroups: { label: string; skills: string[] }[] = [
       "Ruff",
       "ETL & data modeling",
       "Recursive descent parsing",
+      "Concurrency & scheduling",
       "REPL design",
       "Automated testing",
     ],
@@ -81,9 +82,10 @@ export default function ResumePage() {
             deployments and was recently promoted to Tech Level Two, with
             day-to-day work in hardware assembly, device configuration,
             automation, testing, troubleshooting, and process validation.
-            Builds practical software on the side — production-chain tooling in
-            Python and a custom expression interpreter in Scala — with an
-            emphasis on correct logic, clean data modeling, and tests.
+            Builds practical software on the side — a Python production-chain
+            tool and a Scala 3 interpreter that grew into a Cats Effect
+            task-orchestration runtime — with an emphasis on correct logic,
+            clean data modeling, concurrency, and tests.
           </p>
         </section>
 

@@ -7,7 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/projects",
     "/projects/satisfactory-tools",
-    "/projects/recursive-descent-parser",
+    "/projects/taskview",
     "/resume",
     "/contact",
   ];

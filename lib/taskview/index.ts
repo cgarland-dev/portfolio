@@ -1,24 +1,24 @@
 /**
- * MiniCalc — public API for the in-browser REPL.
+ * TaskView — public API for the in-browser REPL.
  *
- * A faithful TypeScript port of the Scala MiniCalc interpreter's pure
+ * A faithful TypeScript port of the Scala TaskView interpreter's pure
  * expression language. `evalLine` evaluates against a persistent session
  * environment and threads bindings the same way the Scala REPL does: a
  * top-level `let x = … in …` keeps `x` in scope for later lines.
  */
 
-import { formatError, showValue } from "@/lib/minicalc/ast";
-import { parse } from "@/lib/minicalc/parser";
-import { evalThreaded, type Environment } from "@/lib/minicalc/evaluator";
+import { formatError, showValue } from "@/lib/taskview/ast";
+import { parse } from "@/lib/taskview/parser";
+import { evalThreaded, type Environment } from "@/lib/taskview/evaluator";
 
-export type { Value } from "@/lib/minicalc/ast";
-export type { Environment } from "@/lib/minicalc/evaluator";
+export type { Value } from "@/lib/taskview/ast";
+export type { Environment } from "@/lib/taskview/evaluator";
 export {
   WELCOME,
   HELP,
   HELP_FULL,
   SCALA_ONLY_COMMANDS,
-} from "@/lib/minicalc/help";
+} from "@/lib/taskview/help";
 
 export type LineResult =
   | { kind: "value"; text: string; env: Environment }
