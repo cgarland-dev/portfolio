@@ -36,8 +36,8 @@ export const projects: Project[] = [
     demoUrl: "https://satisfactory-tools.streamlit.app/",
   },
   {
-    slug: "recursive-descent-parser",
-    title: "MiniCalc — Interpreter & Task-Orchestration Runtime",
+    slug: "taskview",
+    title: "TaskView — Interpreter & Task-Orchestration Runtime",
     type: "Language interpreter & concurrency runtime (Scala 3)",
     summary:
       "A Scala 3 project that began as a purely functional expression interpreter — a hand-written recursive descent parser, an ADT-based AST, and a pure, type-checked evaluator — and grew into a task-orchestration runtime: typed tasks with priorities, dependencies, timeouts, and retries; a dependency-aware scheduler with cycle detection; and concurrent execution on Cats Effect fibers, all driven from an interactive REPL.",

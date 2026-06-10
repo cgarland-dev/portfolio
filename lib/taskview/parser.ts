@@ -1,5 +1,5 @@
 /**
- * MiniCalc parser — a two-phase recursive descent parser, ported from the
+ * TaskView parser — a two-phase recursive descent parser, ported from the
  * Scala `minicalc.parser.Parser`.
  *
  *   String -> tokenize -> Token[] -> parse -> Expr
@@ -9,7 +9,7 @@
  * All binary operators are left-associative.
  */
 
-import { type Expr, type EvalError, STRING_TO_OP } from "@/lib/minicalc/ast";
+import { type Expr, type EvalError, STRING_TO_OP } from "@/lib/taskview/ast";
 
 // ---------------------------------------------------------------------------
 // Tokens
@@ -328,7 +328,7 @@ function parseTokens(
   };
 }
 
-/** Parse a MiniCalc expression: String -> tokenize -> parse -> Expr. */
+/** Parse a TaskView expression: String -> tokenize -> parse -> Expr. */
 export function parse(
   input: string,
 ): { ok: true; expr: Expr } | { ok: false; error: EvalError } {

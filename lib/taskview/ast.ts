@@ -1,8 +1,8 @@
 /**
- * MiniCalc — abstract syntax, runtime values, and error types.
+ * TaskView — abstract syntax, runtime values, and error types.
  *
- * This is a faithful browser port of the Scala MiniCalc interpreter
- * (github.com/cgarland-dev/MiniCalc). It implements the pure expression
+ * This is a faithful browser port of the Scala TaskView interpreter
+ * (github.com/cgarland-dev/TaskView). It implements the pure expression
  * language exactly as the Scala `Evaluator.eval` does: numbers, booleans,
  * variables, arithmetic, comparisons, logic, `let` bindings, and `if`.
  * Names, precedence, and error wording match the original source.

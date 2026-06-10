@@ -10,8 +10,8 @@ import {
   EXAMPLES,
   SCALA_ONLY_COMMANDS,
   type Environment,
-} from "@/lib/minicalc";
-import { highlight } from "@/lib/minicalc/highlight";
+} from "@/lib/taskview";
+import { highlight } from "@/lib/taskview/highlight";
 
 type LineKind = "welcome" | "input" | "value" | "error" | "info";
 type Line = { id: number; kind: LineKind; text: string };
@@ -31,7 +31,7 @@ function welcomeLines(): Line[] {
   return WELCOME.map((text) => ({ id: nextLineId(), kind: "welcome", text }));
 }
 
-export default function MiniCalcRepl() {
+export default function TaskViewRepl() {
   const [lines, setLines] = useState<Line[]>(() => welcomeLines());
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
@@ -84,7 +84,7 @@ export default function MiniCalcRepl() {
       append([
         {
           kind: "info",
-          text: `${trimmed.split(/\s+/)[0]} is part of MiniCalc's task/workflow engine — run the full Scala app to use it. This browser demo evaluates the expression language.`,
+          text: `${trimmed.split(/\s+/)[0]} is part of TaskView's task/workflow engine — run the full Scala app to use it. This browser demo evaluates the expression language.`,
         },
       ]);
       return;
@@ -155,7 +155,7 @@ export default function MiniCalcRepl() {
               <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
               <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f]" />
             </span>
-            <span className="font-mono text-xs text-muted">MiniCalc REPL</span>
+            <span className="font-mono text-xs text-muted">TaskView REPL</span>
           </div>
           <button
             type="button"
@@ -174,7 +174,7 @@ export default function MiniCalcRepl() {
           ref={outputRef}
           role="log"
           aria-live="polite"
-          aria-label="MiniCalc REPL output"
+          aria-label="TaskView REPL output"
           onClick={() => inputRef.current?.focus()}
           className="h-72 min-h-44 cursor-text resize-y overflow-auto px-4 py-3 font-mono text-sm leading-tight"
         >
@@ -192,8 +192,8 @@ export default function MiniCalcRepl() {
           ))}
 
           <form onSubmit={onSubmit} className="mt-1 flex items-center">
-            <label htmlFor="minicalc-input" className="sr-only">
-              MiniCalc expression input
+            <label htmlFor="taskview-input" className="sr-only">
+              TaskView expression input
             </label>
             <span aria-hidden="true" className="text-accent">
               {"> "}
@@ -211,7 +211,7 @@ export default function MiniCalcRepl() {
                 ))}
               </div>
               <input
-                id="minicalc-input"
+                id="taskview-input"
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

@@ -5,13 +5,13 @@ import ProjectDetailLayout, {
   ProjectLinksSection,
 } from "@/components/ProjectDetailLayout";
 import CodeBlock from "@/components/CodeBlock";
-import MiniCalcRepl from "@/components/MiniCalcRepl";
+import TaskViewRepl from "@/components/TaskViewRepl";
 import { getProject } from "@/data/projects";
 
-const project = getProject("recursive-descent-parser");
+const project = getProject("taskview");
 
 export const metadata: Metadata = {
-  title: "MiniCalc — Interpreter & Task-Orchestration Runtime",
+  title: "TaskView — Interpreter & Task-Orchestration Runtime",
   description:
     "A Scala 3 expression interpreter that grew into a Cats Effect task-orchestration runtime: a hand-written recursive descent parser and pure evaluator, plus typed tasks with priorities, dependencies, timeouts, and retries, a topological scheduler with cycle detection, and concurrent fiber-based execution — with an interactive REPL.",
 };
@@ -56,7 +56,7 @@ export default function RecursiveDescentParserPage() {
     <ProjectDetailLayout project={project}>
       <DetailSection id="overview" title="Project overview" eyebrow="Overview">
         <p>
-          MiniCalc is a Scala 3 project in two layers. It started as a purely
+          TaskView is a Scala 3 project in two layers. It started as a purely
           functional interpreter for a small expression language — source text
           is tokenized, parsed into an abstract syntax tree by a hand-written
           recursive descent parser, and evaluated by a pure, type-checked
@@ -161,7 +161,7 @@ export default function RecursiveDescentParserPage() {
 
       <DetailSection id="try" title="Try it in your browser" eyebrow="Live">
         <p>
-          The console below is a faithful TypeScript port of MiniCalc&apos;s{" "}
+          The console below is a faithful TypeScript port of TaskView&apos;s{" "}
           <span className="text-fg">expression layer</span> — the same two-phase
           tokenizer, recursive descent parser, evaluator, precedence rules, and
           error messages, running entirely in your browser. Type an expression
@@ -169,7 +169,7 @@ export default function RecursiveDescentParserPage() {
           reference.
         </p>
 
-        <MiniCalcRepl />
+        <TaskViewRepl />
 
         <p className="text-sm">Quick reference:</p>
         <ul className={listClass}>
